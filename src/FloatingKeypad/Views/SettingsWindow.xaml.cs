@@ -157,17 +157,16 @@ public partial class SettingsWindow : Window
             Left = 300 + _buttons.Count * 12,
             Top = 300 + _buttons.Count * 12
         };
-        _buttons.Add(b);
+        _buttons.Insert(0, b);
         RefreshList();
         ButtonList.SelectedItem = b;
         App.Current.SaveConfig();
         App.Current.RebuildWindows();
     }
 
-    private void Delete_Click(object sender, RoutedEventArgs e)
+    private void ItemDelete_Click(object sender, RoutedEventArgs e)
     {
-        var b = Current;
-        if (b == null)
+        if ((sender as FrameworkElement)?.DataContext is not ButtonConfig b)
         {
             return;
         }

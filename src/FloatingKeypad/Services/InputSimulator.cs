@@ -5,9 +5,25 @@ namespace FloatingKeypad.Services;
 
 public static class InputSimulator
 {
+    private const uint INPUT_MOUSE = 0;
     private const uint INPUT_KEYBOARD = 1;
     private const uint KEYEVENTF_EXTENDEDKEY = 0x0001;
     private const uint KEYEVENTF_KEYUP = 0x0002;
+
+    private const uint MOUSEEVENTF_LEFTDOWN = 0x0002;
+    private const uint MOUSEEVENTF_LEFTUP = 0x0004;
+    private const uint MOUSEEVENTF_RIGHTDOWN = 0x0008;
+    private const uint MOUSEEVENTF_RIGHTUP = 0x0010;
+    private const uint MOUSEEVENTF_MIDDLEDOWN = 0x0020;
+    private const uint MOUSEEVENTF_MIDDLEUP = 0x0040;
+    private const uint MOUSEEVENTF_XDOWN = 0x0080;
+    private const uint MOUSEEVENTF_XUP = 0x0100;
+    private const uint MOUSEEVENTF_WHEEL = 0x0800;
+    private const uint MOUSEEVENTF_HWHEEL = 0x1000;
+
+    private const int XBUTTON1 = 0x0001;
+    private const int XBUTTON2 = 0x0002;
+    private const int WHEEL_DELTA = 120;
 
     [StructLayout(LayoutKind.Sequential)]
     private struct INPUT
@@ -56,53 +72,7 @@ public static class InputSimulator
     [DllImport("user32.dll", SetLastError = true)]
     private static extern uint SendInput(uint nInputs, INPUT[] pInputs, int cbSize);
 
-    private const int WM_LBUTTONDOWN = 0x0201;
-    private const int WM_LBUTTONUP = 0x0202;
-    private const int WM_RBUTTONDOWN = 0x0204;
-    private const int WM_RBUTTONUP = 0x0205;
-    private const int WM_MBUTTONDOWN = 0x0207;
-    private const int WM_MBUTTONUP = 0x0208;
-    private const int WM_MOUSEWHEEL = 0x020A;
-    private const int WM_XBUTTONDOWN = 0x020B;
-    private const int WM_XBUTTONUP = 0x020C;
-    private const int WM_MOUSEHWHEEL = 0x020E;
-
-    private const int MK_LBUTTON = 0x0001;
-    private const int MK_RBUTTON = 0x0002;
-    private const int MK_MBUTTON = 0x0010;
-    private const int XBUTTON1 = 0x0001;
-    private const int XBUTTON2 = 0x0002;
-    private const int WHEEL_DELTA = 120;
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct POINT
-    {
-        public int X;
-        public int Y;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct RECT
-    {
-        public int Left;
-        public int Top;
-        public int Right;
-        public int Bottom;
-    }
-
-    [DllImport("user32.dll")]
-    private static extern bool PostMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
-
-    [DllImport("user32.dll")]
-    private static extern bool GetCursorPos(out POINT p);
-
-    [DllImport("user32.dll")]
-    private static extern bool ScreenToClient(IntPtr hWnd, ref POINT p);
-
-    [DllImport("user32.dll")]
-    private static extern bool GetClientRect(IntPtr hWnd, out RECT r);
-
-    public static void Execute(IReadOnlyList<InputEvent> events, IntPtr target)
+    public static void Execute(IReadOnlyList<InputEvent> events)
     {
         foreach (var e in events)
         {
@@ -112,7 +82,7 @@ public static class InputSimulator
                     SendKey(k.Vk, k.Extended, k.Down);
                     break;
                 case MouseEvent m:
-                    SendMouse(m, target);
+                    SendMouse(m);
                     break;
             }
         }
@@ -140,62 +110,49 @@ public static class InputSimulator
         SendInput(1, new[] { input }, Marshal.SizeOf<INPUT>());
     }
 
-    private static void SendMouse(MouseEvent m, IntPtr target)
+    private static void SendMouse(MouseEvent m)
     {
         if (m.Action is MouseAction.WheelUp or MouseAction.WheelDown
             or MouseAction.WheelLeft or MouseAction.WheelRight)
         {
-            SendWheel(m.Action, target);
+            SendWheel(m.Action);
             return;
         }
 
-        if (!WindowHelper.IsAlive(target))
-        {
-            return;
-        }
-
-        var (msgDown, msgUp, downFlag) = m.Button switch
-        {
-            MouseButton.Left => (WM_LBUTTONDOWN, WM_LBUTTONUP, MK_LBUTTON),
-            MouseButton.Right => (WM_RBUTTONDOWN, WM_RBUTTONUP, MK_RBUTTON),
-            MouseButton.Middle => (WM_MBUTTONDOWN, WM_MBUTTONUP, MK_MBUTTON),
-            _ => (WM_XBUTTONDOWN, WM_XBUTTONUP, 0)
-        };
-
-        var isX = m.Button is MouseButton.X1 or MouseButton.X2;
-        var xButton = m.Button == MouseButton.X1 ? XBUTTON1 : XBUTTON2;
-        var lParam = MakeClientLParam(target);
-
-        void Post(bool down)
-        {
-            var wParam = isX
-                ? (IntPtr)((xButton << 16) | (down ? downFlag : 0))
-                : (IntPtr)(down ? downFlag : 0);
-            PostMessage(target, down ? msgDown : msgUp, wParam, lParam);
-        }
-
+        var (downFlag, upFlag) = ButtonFlags(m.Button);
+        var data = ButtonData(m.Button);
         switch (m.Action)
         {
             case MouseAction.Down:
-                Post(true);
+                SendMouseInput(downFlag, data);
                 break;
             case MouseAction.Up:
-                Post(false);
+                SendMouseInput(upFlag, data);
                 break;
             default:
-                Post(true);
-                Post(false);
+                SendMouseInput(downFlag, data);
+                SendMouseInput(upFlag, data);
                 break;
         }
     }
 
-    private static void SendWheel(MouseAction action, IntPtr target)
+    private static (uint Down, uint Up) ButtonFlags(MouseButton button) => button switch
     {
-        if (!WindowHelper.IsAlive(target))
-        {
-            return;
-        }
+        MouseButton.Left => (MOUSEEVENTF_LEFTDOWN, MOUSEEVENTF_LEFTUP),
+        MouseButton.Right => (MOUSEEVENTF_RIGHTDOWN, MOUSEEVENTF_RIGHTUP),
+        MouseButton.Middle => (MOUSEEVENTF_MIDDLEDOWN, MOUSEEVENTF_MIDDLEUP),
+        _ => (MOUSEEVENTF_XDOWN, MOUSEEVENTF_XUP)
+    };
 
+    private static uint ButtonData(MouseButton button) => button switch
+    {
+        MouseButton.X1 => (uint)XBUTTON1 << 16,
+        MouseButton.X2 => (uint)XBUTTON2 << 16,
+        _ => 0
+    };
+
+    private static void SendWheel(MouseAction action)
+    {
         var horizontal = action is MouseAction.WheelLeft or MouseAction.WheelRight;
         var delta = action switch
         {
@@ -205,29 +162,17 @@ public static class InputSimulator
             _ => WHEEL_DELTA
         };
 
-        GetCursorPos(out var screen);
-        var lParam = (IntPtr)((screen.Y << 16) | (screen.X & 0xFFFF));
-        var wParam = (IntPtr)(delta << 16);
-
-        PostMessage(target, horizontal ? WM_MOUSEHWHEEL : WM_MOUSEWHEEL, wParam, lParam);
+        SendMouseInput(horizontal ? MOUSEEVENTF_HWHEEL : MOUSEEVENTF_WHEEL, unchecked((uint)delta));
     }
 
-    private static IntPtr MakeClientLParam(IntPtr target)
+    private static void SendMouseInput(uint flags, uint mouseData)
     {
-        GetCursorPos(out var pt);
-        ScreenToClient(target, ref pt);
-
-        if (GetClientRect(target, out var rect))
+        var input = new INPUT
         {
-            var w = rect.Right - rect.Left;
-            var h = rect.Bottom - rect.Top;
-            if (pt.X < 0 || pt.Y < 0 || pt.X > w || pt.Y > h)
-            {
-                pt.X = w / 2;
-                pt.Y = h / 2;
-            }
-        }
+            type = INPUT_MOUSE,
+            U = new InputUnion { mi = new MOUSEINPUT { mouseData = mouseData, dwFlags = flags } }
+        };
 
-        return (IntPtr)((pt.Y << 16) | (pt.X & 0xFFFF));
+        SendInput(1, new[] { input }, Marshal.SizeOf<INPUT>());
     }
 }

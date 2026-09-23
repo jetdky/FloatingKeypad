@@ -85,10 +85,10 @@
                     <Button Grid.Column="3" Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Pick]}" Margin="8,0,0,0" Click="PickFg_Click" />
                 </Grid>
 
-                <TextBlock Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Preview]}" Margin="0,12,0,8" />
-                <Border Background="#F3F4F6" CornerRadius="8" Padding="20" HorizontalAlignment="Left">
+                <TextBlock Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Preview]}" Margin="0,12,0,8" HorizontalAlignment="Center" />
+                <Border Background="#F3F4F6" CornerRadius="8" Padding="20" HorizontalAlignment="Center">
                     <Border x:Name="PreviewButton" CornerRadius="10" Background="#CC2D7FF9" BorderBrush="#40FFFFFF" BorderThickness="1">
-                        <TextBlock x:Name="PreviewText" Text="Preview" Foreground="White" FontSize="15" FontWeight="SemiBold"
+                        <TextBlock x:Name="PreviewText" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Text]}" Foreground="White" FontSize="15" FontWeight="SemiBold"
                                    HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0" />
                     </Border>
                 </Border>
@@ -96,8 +96,12 @@
         </ScrollViewer>
 
         <Grid Grid.Row="1" Margin="0,20,0,0">
-            <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Reset]}"
-                    Width="120" HorizontalAlignment="Left" Click="Reset_Click" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Export]}" Click="Export_Click" />
+                <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Import]}" Margin="8,0,0,0" Click="Import_Click" />
+                <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Reset]}"
+                        Width="120" Margin="8,0,0,0" Click="Reset_Click" />
+            </StackPanel>
             <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[SaveApply]}"
                     Width="120" HorizontalAlignment="Right" IsDefault="True" Click="Ok_Click" />
         </Grid>

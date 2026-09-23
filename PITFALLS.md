@@ -34,7 +34,9 @@ private struct InputUnion
 
 **解决**：
 - 悬浮窗设扩展样式 `WS_EX_NOACTIVATE`（点击不激活）+ `WS_EX_TOOLWINDOW`，并拦截 `WM_MOUSEACTIVATE` 返回 `MA_NOACTIVATE`；
-- 鼠标动作改用 `PostMessage` 定向发送到「点击按钮前记录的 `GetForegroundWindow()`」，不依赖光标位置。
+- 鼠标事件用 `SendInput` 在**光标当前位置**发送，发送前把所有悬浮窗临时设为 `WS_EX_TRANSPARENT`（鼠标穿透），点击即落到浮层下面的窗口，光标不移动。按钮拖到哪，点击就作用在下面同位置的窗口上。
+
+**教训**：曾两度走弯路——先用 `PostMessage` 定向发送（伪造的 `WM_*BUTTON*` 消息 Windows 11 资源管理器、Chrome / Electron 不响应）；后改 `SendInput` 却把光标移到「记录的 `GetForegroundWindow()` 客户区」，按钮在窗口外时坐标回退到窗口中心，点击位置错误（表现为时灵时不灵）。正解是穿透 + 光标原位点击，无需记录目标窗口、无需移动光标。
 
 ---
 

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using FloatingKeypad.Models;
 using FloatingKeypad.Services;
@@ -218,7 +219,6 @@ public partial class GlobalConfigWindow : Window
         PreviewButton.Opacity = Appearance.Opacity;
         PreviewButton.Background = TryBrush(Appearance.Background, Colors.Transparent);
         PreviewText.Foreground = TryBrush(Appearance.Foreground, Colors.White);
-        PreviewText.Text = Localization.T("Preview");
     }
 
     private static Brush TryBrush(string hex, Color fallback)
@@ -250,6 +250,83 @@ public partial class GlobalConfigWindow : Window
     }
 
     private void Ok_Click(object sender, RoutedEventArgs e) => Close();
+
+    private void Export_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.SaveFileDialog
+        {
+            Title = Localization.T("ExportTitle"),
+            Filter = "JSON (*.json)|*.json",
+            FileName = "FloatingKeypad-config.json"
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        try
+        {
+            ConfigService.ExportTo(dialog.FileName, App.Current.Config);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"导出配置失败: {ex.Message}");
+            MessageBox.Show(Localization.T("ExportFailed"), Localization.T("ExportTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void Import_Click(object sender, RoutedEventArgs e)
+    {
+        var dialog = new Microsoft.Win32.OpenFileDialog
+        {
+            Title = Localization.T("ImportTitle"),
+            Filter = "JSON (*.json)|*.json",
+            CheckFileExists = true
+        };
+
+        if (dialog.ShowDialog() != true)
+        {
+            return;
+        }
+
+        AppConfig imported;
+        try
+        {
+            imported = ConfigService.LoadFrom(dialog.FileName);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"导入配置失败: {ex.Message}");
+            MessageBox.Show(Localization.T("ImportFailed"), Localization.T("ImportTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            return;
+        }
+
+        if (MessageBox.Show(Localization.T("ImportConfirm"), Localization.T("ImportTitle"),
+                MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes)
+        {
+            return;
+        }
+
+        App.Current.ApplyConfig(imported);
+
+        _loading = true;
+        LanguageBox.SelectedIndex = Localization.Instance.Current == "en" ? 1 : 0;
+        _loading = false;
+        LoadAppearance();
+    }
+
+    protected override void OnKeyDown(KeyEventArgs e)
+    {
+        if (e.Key == Key.Escape)
+        {
+            Close();
+            e.Handled = true;
+            return;
+        }
+
+        base.OnKeyDown(e);
+    }
 
     protected override void OnClosing(CancelEventArgs e)
     {

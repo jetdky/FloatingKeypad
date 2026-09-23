@@ -66,6 +66,14 @@ public partial class App : Application
         RebuildWindows();
     }
 
+    public void ApplyConfig(AppConfig config)
+    {
+        Config = config;
+        ApplyLanguage();
+        SaveConfig();
+        RebuildWindows();
+    }
+
     private void EnsureDefaults()
     {
         if (Config.Buttons.Count > 0)
@@ -124,6 +132,14 @@ public partial class App : Application
         foreach (var w in _windows)
         {
             w.Apply();
+        }
+    }
+
+    public void SetOverlaysClickThrough(bool enabled)
+    {
+        foreach (var w in _windows)
+        {
+            w.SetClickThrough(enabled);
         }
     }
 

@@ -10,7 +10,7 @@
 
 1. **按作用域分层，主次分明**
    - 主界面只放「当前对象」的核心字段：这里每个按钮只有**名称 + 绑定动作**
-   - 全局项（语言、全局外观）收进顶部「配置」按钮弹出的独立弹窗
+   - 全局项（语言、悬浮外观）收进「配置」按钮弹出的独立弹窗
    - 禁止把全局设置铺在主界面；不要把每个对象都挂一份全局配置
 
 2. **直接生效，不设提交动作**
@@ -110,13 +110,15 @@ src/FloatingKeypad/
 
 默认值集中在 `AppearanceConfig` 的 `DefaultWidth/DefaultHeight/…` 常量，`AppearanceConfig.Reset()` 一键还原（默认淡蓝底 `#CC2D7FF9` + 白字）。新增外观项时同步补常量与 `Reset()`。
 
+首次运行（无 `config.json`）加载内置默认配置 `src/FloatingKeypad/Assets/default-config.json`（csproj 里声明为 `EmbeddedResource`）；若该配置为空，`App.EnsureDefaults()` 兜底创建一个「复制」示例按钮。
+
 ## 设置界面结构
 
-- `SettingsWindow`（主界面）：只有**按钮列表 + 名称 + 绑定动作**，顶部一个「配置」按钮；**无保存/关闭按钮**
+- `SettingsWindow`（主界面）：只有**按钮列表 + 名称 + 绑定动作**；顶部「添加按钮」，列表每项右侧一个删除 ✕，底部「配置」按钮；**无保存/关闭按钮**
   - 改名称 / 捕获绑定**立即生效**：更新内存 → `App.RefreshWindows()` 刷新悬浮按钮
   - 持久化策略：捕获 / 添加 / 删除立即 `SaveConfig`；名称改动走 600ms 防抖 `_saveTimer`（避免 IME 组合期频繁写盘），窗口 `Closed` 再兜底保存
   - 添加 / 删除按钮：`App.SaveConfig()` + `App.RebuildWindows()`
-- `GlobalConfigWindow`（配置弹窗，由 `SettingsWindow.Config_Click` 打开）：语言 + 全局外观 + 预览 + 恢复默认；**无取消按钮**，「保存并应用」与窗口关闭都落地（`OnClosing` 里 `SaveConfig` + `RebuildWindows`）
+- `GlobalConfigWindow`（配置弹窗，由 `SettingsWindow.Config_Click` 打开）：语言 + 悬浮外观 + 预览 + 导出 / 导入 + 恢复默认；**无取消按钮**，「保存并应用」、`Esc` 与窗口关闭都落地（`OnClosing` 里 `SaveConfig` + `RebuildWindows`）
 - `KeyCaptureDialog`（捕获弹窗）：无任何按钮；打开即开始捕获，**捕获到完整动作立即写入 `Result` 并自动关闭**（直接替换原绑定）；`Esc` 或关闭窗口视为取消
 - 语言 / 外观是**全局**的，不要下放到单个按钮；新增全局配置项加到 `GlobalConfigWindow`，不要塞回主界面
 
@@ -130,9 +132,10 @@ src/FloatingKeypad/
 `InputSimulator` 的 `INPUT` 结构体 union 必须包含 `MOUSEINPUT`（union 中最大的成员），否则 `cbSize` 不匹配、`SendInput` 静默失败（表现为键盘完全无效）。
 **不要**只放 `KEYBDINPUT`。
 
-### 3. 鼠标动作定向发送
-鼠标事件用 `PostMessage` 发送到点击按钮前记录的 `GetForegroundWindow()`，不走 `SendInput`。
-坐标用光标相对目标窗口客户区的坐标，超出客户区时回退到窗口中心。
+### 3. 鼠标动作穿透点击
+鼠标事件用 `SendInput` 在**光标当前位置**发送，光标不移动。**不要**改回 `PostMessage`：伪造的 `WM_*BUTTON*` 消息现代程序（Windows 11 资源管理器、Chrome / Electron）不响应。
+发送期间把所有悬浮窗临时设为 `WS_EX_TRANSPARENT` 鼠标穿透，点击落到浮层下面的窗口；否则按钮叠在目标窗口上时会先命中按钮自己。
+不要记录 / 计算目标窗口坐标：按钮拖到哪，光标就在哪，穿透后点击自然作用于下面同位置的窗口。
 
 ### 4. 设置界面的输入框不要重建 ItemsSource
 `SettingsWindow` 的名称框 `TextChanged` 里**不能**重建 ListBox 的 `ItemsSource`——会触发 `SelectionChanged` → 重新赋值 `TextBox.Text` → 光标跳到开头、且 IME 组合被反复打断导致无法输入中文。
@@ -170,7 +173,7 @@ src/FloatingKeypad/
 - 设置保存后悬浮窗立即更新
 - 右击悬浮按钮能打开设置（历史 bug，见坑 8）
 - 切换语言后界面 / 托盘 / 动作描述实时刷新
-- 全局外观改动保存后所有悬浮按钮同步生效
+- 悬浮外观改动保存后所有悬浮按钮同步生效
 
 ## 踩坑记录
 

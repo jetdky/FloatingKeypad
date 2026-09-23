@@ -50,7 +50,6 @@ public partial class FloatingButtonWindow : Window
     private int _startCursorY;
     private int _startWinX;
     private int _startWinY;
-    private IntPtr _target;
 
     public ButtonConfig Config => _config;
 
@@ -99,7 +98,6 @@ public partial class FloatingButtonWindow : Window
 
     protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
     {
-        _target = WindowHelper.Foreground;
         GetCursorPos(out var p);
         _startCursorX = p.X;
         _startCursorY = p.Y;
@@ -162,6 +160,8 @@ public partial class FloatingButtonWindow : Window
         base.OnMouseRightButtonUp(e);
     }
 
+    public void SetClickThrough(bool enabled) => WindowHelper.SetClickThrough(_hwnd, enabled);
+
     private void Trigger()
     {
         if (_config.Events.Count == 0)
@@ -169,7 +169,31 @@ public partial class FloatingButtonWindow : Window
             return;
         }
 
-        var target = WindowHelper.IsAlive(_target) ? _target : WindowHelper.Foreground;
-        InputSimulator.Execute(_config.Events, target);
+        var hasMouse = false;
+        foreach (var e in _config.Events)
+        {
+            if (e is MouseEvent)
+            {
+                hasMouse = true;
+                break;
+            }
+        }
+
+        if (hasMouse)
+        {
+            App.Current.SetOverlaysClickThrough(true);
+        }
+
+        try
+        {
+            InputSimulator.Execute(_config.Events);
+        }
+        finally
+        {
+            if (hasMouse)
+            {
+                App.Current.SetOverlaysClickThrough(false);
+            }
+        }
     }
 }

@@ -1,0 +1,273 @@
+{
+  "Language": "zh-CN",
+  "Appearance": {
+    "Width": 120,
+    "Height": 48,
+    "Opacity": 0.88,
+    "Background": "#CC2D7FF9",
+    "Foreground": "#FFFFFFFF"
+  },
+  "Buttons": [
+    {
+      "Id": "2522b0e0f0924de8b2fd5c5f07bc1a42",
+      "Label": "Ctrl \u002B V",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 86,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 86,
+          "Extended": false,
+          "Down": false
+        },
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 1.6,
+      "Top": 549.6
+    },
+    {
+      "Id": "ef553a0cb23b4f2a958a348fe809da0f",
+      "Label": "Ctrl \u002B C",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 67,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 67,
+          "Extended": false,
+          "Down": false
+        },
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": -6.4,
+      "Top": 448.8
+    },
+    {
+      "Id": "b9d50000aae049b9b02901067158c63a",
+      "Label": "\u9F20\u6807\u53F3\u952E\u5355\u51FB",
+      "Events": [
+        {
+          "kind": "mouse",
+          "Button": 1,
+          "Action": 2
+        }
+      ],
+      "Left": 41.6,
+      "Top": 341.6
+    },
+    {
+      "Id": "bfe8aff9512d4586b13a64d8033150c0",
+      "Label": "Ctrl \u002B A",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 65,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 65,
+          "Extended": false,
+          "Down": false
+        },
+        {
+          "kind": "key",
+          "Vk": 162,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 0,
+      "Top": 657.6
+    },
+    {
+      "Id": "5a74be7ad8674175a26f71920b6d47e9",
+      "Label": "Backspace",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 8,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 8,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 1834.4,
+      "Top": 331.20000000000005
+    },
+    {
+      "Id": "a571385c750b43ab8bd8d84eb1c5ab85",
+      "Label": "Enter",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 13,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 13,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 1821.6000000000001,
+      "Top": 497.6
+    },
+    {
+      "Id": "2ffd1f80cb0a4b33927c53d0bf3e362f",
+      "Label": "\u2191",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 38,
+          "Extended": true,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 38,
+          "Extended": true,
+          "Down": false
+        }
+      ],
+      "Left": 1832.8000000000002,
+      "Top": 613.6
+    },
+    {
+      "Id": "6ef67f795d7747c994d790145141aed4",
+      "Label": "\u2193",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 40,
+          "Extended": true,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 40,
+          "Extended": true,
+          "Down": false
+        }
+      ],
+      "Left": 1831.2,
+      "Top": 718.4000000000001
+    },
+    {
+      "Id": "f847f93f6c714d118481c0895d355af4",
+      "Label": "/",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 191,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 191,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 1834.4,
+      "Top": 413.6
+    },
+    {
+      "Id": "a1fd7023a2b04bdca080688d4057737f",
+      "Label": "Shift",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 160,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 160,
+          "Extended": false,
+          "Down": false
+        }
+      ],
+      "Left": 40,
+      "Top": 749.6
+    },
+    {
+      "Id": "34e25432fa024895b09f31444c414cf0",
+      "Label": "Win \u002B E",
+      "Events": [
+        {
+          "kind": "key",
+          "Vk": 91,
+          "Extended": true,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 69,
+          "Extended": false,
+          "Down": true
+        },
+        {
+          "kind": "key",
+          "Vk": 69,
+          "Extended": false,
+          "Down": false
+        },
+        {
+          "kind": "key",
+          "Vk": 91,
+          "Extended": true,
+          "Down": false
+        }
+      ],
+      "Left": 16.8,
+      "Top": 840
+    }
+  ]
+}

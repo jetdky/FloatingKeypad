@@ -19,17 +19,18 @@ A floating-button tool for Windows. Buttons float on the desktop and support cus
 - Buttons float on the desktop and can be dragged to any position
 - Custom key combinations, mouse buttons, and mixed key + mouse actions
 - Clicking a button never changes the active window; the action goes to the original window
-- Global appearance: width / height / opacity / background / foreground for all buttons
+- Floating appearance: width / height / opacity / background / foreground for all buttons
+- Export / import config
 - Chinese / English UI
 - Runs in the system tray; config persisted to `%APPDATA%\FloatingKeypad\config.json`
 
 ## Usage
 
-Double-click `FloatingKeypad.exe` (administrator rights required). The first run creates a sample "Copy" button.
+Double-click `FloatingKeypad.exe` (administrator rights required). The first run loads the built-in default buttons.
 
 - Drag a button to move it
 - Right-click a button to open settings and edit its name and bound action
-- The "Config" button at the top: language and global appearance
+- The "Config" button: language, floating appearance, export / import config
 
 ## Build
 
@@ -117,14 +118,13 @@ FloatingKeypad/
 
 - **No focus stealing**: the window uses `WS_EX_NOACTIVATE` and intercepts `WM_MOUSEACTIVATE`, returning `MA_NOACTIVATE`
 - **Keyboard**: simulated globally with `SendInput`, sent to the currently focused window
-- **Mouse**: sent directly with `PostMessage` to the `GetForegroundWindow()` recorded when the button was clicked
+- **Mouse**: simulated with `SendInput` at the cursor position; overlay windows are made click-through first, so the click lands on the window underneath
 - **Key capture**: low-level keyboard / mouse hooks `WH_KEYBOARD_LL` / `WH_MOUSE_LL`
 
 ## Known limitations
 
 - If the target app runs as administrator, this app must too (enforced via manifest)
 - Games and other apps using Raw Input may not respond to keyboard simulation
-- Mouse actions are sent via `PostMessage`; Chrome / Electron apps may not respond
 - System-level combinations like `Win+L` are reserved by Windows and cannot be simulated
 
 ## License

@@ -33,12 +33,32 @@ public static class ConfigService
             if (File.Exists(FilePath))
             {
                 var json = File.ReadAllText(FilePath);
-                return JsonSerializer.Deserialize<AppConfig>(json, Options) ?? new AppConfig();
+                return JsonSerializer.Deserialize<AppConfig>(json, Options) ?? Default();
             }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"加载配置失败: {ex.Message}");
+        }
+
+        return Default();
+    }
+
+    private static AppConfig Default()
+    {
+        try
+        {
+            using var stream = typeof(ConfigService).Assembly
+                .GetManifestResourceStream("FloatingKeypad.Assets.default-config.json");
+            if (stream != null)
+            {
+                using var reader = new StreamReader(stream);
+                return JsonSerializer.Deserialize<AppConfig>(reader.ReadToEnd(), Options) ?? new AppConfig();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"加载默认配置失败: {ex.Message}");
         }
 
         return new AppConfig();
@@ -48,5 +68,16 @@ public static class ConfigService
     {
         Directory.CreateDirectory(Dir);
         File.WriteAllText(FilePath, JsonSerializer.Serialize(config, Options));
+    }
+
+    public static AppConfig LoadFrom(string path)
+    {
+        var json = File.ReadAllText(path);
+        return JsonSerializer.Deserialize<AppConfig>(json, Options) ?? new AppConfig();
+    }
+
+    public static void ExportTo(string path, AppConfig config)
+    {
+        File.WriteAllText(path, JsonSerializer.Serialize(config, Options));
     }
 }

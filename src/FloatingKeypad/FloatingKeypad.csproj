@@ -22,6 +22,7 @@
     <Resource Include="Assets\logo.png" />
     <Resource Include="Assets\logo.ico" />
     <Resource Include="Assets\setting.png" />
+    <EmbeddedResource Include="Assets\default-config.json" />
   </ItemGroup>
 
   <ItemGroup>
