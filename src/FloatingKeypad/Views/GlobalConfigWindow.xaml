@@ -1,0 +1,105 @@
+<Window x:Class="FloatingKeypad.Views.GlobalConfigWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:svc="clr-namespace:FloatingKeypad.Services"
+        Title="{Binding Source={x:Static svc:Localization.Instance}, Path=[Config]}"
+        Icon="/Assets/logo.png"
+        Width="620"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer Grid.Row="0" VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <TextBlock Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Language]}" Margin="0,0,0,4" />
+                <ComboBox x:Name="LanguageBox" Width="200" HorizontalAlignment="Left" SelectionChanged="LanguageBox_SelectionChanged">
+                    <ComboBoxItem Content="简体中文" />
+                    <ComboBoxItem Content="English" />
+                </ComboBox>
+
+                <TextBlock Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Appearance]}"
+                           FontWeight="SemiBold" FontSize="15" Margin="0,20,0,10" />
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="84" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Width]}" VerticalAlignment="Center" />
+                    <Slider Grid.Column="1" x:Name="WidthSlider" Minimum="60" Maximum="400" ValueChanged="WidthSlider_ValueChanged" />
+                    <TextBox Grid.Column="2" x:Name="WidthBox" Margin="8,0,0,0" TextChanged="WidthBox_TextChanged" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="84" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Height]}" VerticalAlignment="Center" />
+                    <Slider Grid.Column="1" x:Name="HeightSlider" Minimum="30" Maximum="200" ValueChanged="HeightSlider_ValueChanged" />
+                    <TextBox Grid.Column="2" x:Name="HeightBox" Margin="8,0,0,0" TextChanged="HeightBox_TextChanged" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="84" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Opacity]}" VerticalAlignment="Center" />
+                    <Slider Grid.Column="1" x:Name="OpacitySlider" Minimum="0.3" Maximum="1.0" ValueChanged="OpacitySlider_ValueChanged" />
+                    <TextBox Grid.Column="2" x:Name="OpacityBox" Margin="8,0,0,0" TextChanged="OpacityBox_TextChanged" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="36" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="72" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Background]}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Border Grid.Column="1" x:Name="BgSwatch" Width="30" Height="24" CornerRadius="4" BorderBrush="#CCCCCC" BorderThickness="1" />
+                    <TextBox Grid.Column="2" x:Name="BgBox" Margin="8,0,0,0" TextChanged="BgBox_TextChanged" />
+                    <Button Grid.Column="3" Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Pick]}" Margin="8,0,0,0" Click="PickBg_Click" />
+                </Grid>
+
+                <Grid Margin="0,0,0,8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80" />
+                        <ColumnDefinition Width="36" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="72" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0" Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Foreground]}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Border Grid.Column="1" x:Name="FgSwatch" Width="30" Height="24" CornerRadius="4" BorderBrush="#CCCCCC" BorderThickness="1" />
+                    <TextBox Grid.Column="2" x:Name="FgBox" Margin="8,0,0,0" TextChanged="FgBox_TextChanged" />
+                    <Button Grid.Column="3" Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Pick]}" Margin="8,0,0,0" Click="PickFg_Click" />
+                </Grid>
+
+                <TextBlock Text="{Binding Source={x:Static svc:Localization.Instance}, Path=[Preview]}" Margin="0,12,0,8" />
+                <Border Background="#F3F4F6" CornerRadius="8" Padding="20" HorizontalAlignment="Left">
+                    <Border x:Name="PreviewButton" CornerRadius="10" Background="#CC2D7FF9" BorderBrush="#40FFFFFF" BorderThickness="1">
+                        <TextBlock x:Name="PreviewText" Text="Preview" Foreground="White" FontSize="15" FontWeight="SemiBold"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0" />
+                    </Border>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Grid Grid.Row="1" Margin="0,20,0,0">
+            <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[Reset]}"
+                    Width="120" HorizontalAlignment="Left" Click="Reset_Click" />
+            <Button Content="{Binding Source={x:Static svc:Localization.Instance}, Path=[SaveApply]}"
+                    Width="120" HorizontalAlignment="Right" IsDefault="True" Click="Ok_Click" />
+        </Grid>
+    </Grid>
+</Window>

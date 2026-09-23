@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <DeployDir Condition="'$(DeployDir)' == ''">D:\FloatingKeypad</DeployDir>
+    <OutputPath>$(DeployDir)\build\$(Configuration)\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+
+</Project>

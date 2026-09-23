@@ -1,0 +1,23 @@
+# 构建产物
+[Bb]in/
+[Oo]bj/
+build/
+publish/
+
+# 安装包产物
+installer/*.exe
+
+# IDE / 编辑器
+.vs/
+.idea/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Windows 网络下载标记
+*Zone.Identifier
+
+# 临时文件
+*.tmp
+*.log
